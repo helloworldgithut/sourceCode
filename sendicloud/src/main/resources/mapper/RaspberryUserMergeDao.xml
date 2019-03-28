@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sendi.dao.RaspberryUserMergeDaoI">
+    <insert id="addRaspberryUserMerge" parameterType="com.sendi.entity.RaspberryUserMerge">
+        insert into raspberry_user_merge
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="snCode != null" >
+                sn_code,
+            </if>
+            <if test="userId != null" >
+                user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="snCode != null" >
+                #{snCode,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteRaspberryUserMerge" >
+        delete from raspberry_user_merge
+        where sn_code = #{snCode} and user_id = #{userId}
+    </delete>
+    <delete id="deleteBySnCode" parameterType="java.lang.String">
+        delete from raspberry_user_merge
+        where sn_code = #{snCode}
+    </delete>
+    <select id="queryBySnCodeAndUserId" resultType="com.sendi.entity.RaspberryUserMerge">
+        select * from raspberry_user_merge
+        where sn_code = #{snCode} and user_id = #{userId}
+    </select>
+
+    <select id="queryNumBySnCode" resultType="com.sendi.entity.RaspberryUserMerge">
+        select * from raspberry_user_merge
+        where sn_code = #{snCode}
+    </select>
+
+    <select id="queryBySnCode" resultType="com.sendi.entity.RaspberryUserMerge">
+        select * from raspberry_user_merge
+        where sn_code = #{snCode}
+    </select>
+
+</mapper>
+

@@ -7,4 +7,7 @@ package com.exam.cloud.controller;
  * @Date 2019/3/26 15:45
  */
 public class DeviceController {
+
+
+
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sendi.dao.ModuleDaoI">
+    <select id="queryByModId" parameterType="java.lang.String"
+            resultType="com.sendi.entity.Module">
+        select * from module where mod_id = #{modId}
+    </select>
+    <select id="queryByMod" parameterType="java.lang.String"
+            resultType="com.sendi.entity.Module">
+        select * from module where mod_id = #{modId}
+    </select>
+
+</mapper>
+

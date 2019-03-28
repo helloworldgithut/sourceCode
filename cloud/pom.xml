@@ -75,7 +75,6 @@
     </dependencies>
 
     <build>
-        <finalName>cloud</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

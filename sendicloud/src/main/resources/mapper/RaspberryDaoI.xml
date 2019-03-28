@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sendi.dao.RaspberryDaoI">
+    <select id="queryByHashResult" resultType="com.sendi.entity.Raspberry">
+        select  * from  raspberry where hash_result = #{hashResult}
+    </select>
+
+    <select id="queryInfoByHashResult" resultType="com.sendi.entity.Raspberry">
+        select  * from  raspberry where hash_result = #{hashResult}
+    </select>
+    <select id="querySNByHashResult" resultType="java.lang.String">
+        select  sn_code from  raspberry where hash_result = #{hashResult}
+    </select>
+
+    <select id="queryHashResultBySnCode" resultType="java.lang.String">
+        select  hash_result from  raspberry where sn_code = #{snCode}
+    </select>
+</mapper>
