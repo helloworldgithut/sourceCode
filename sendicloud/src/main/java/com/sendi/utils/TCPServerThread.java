@@ -42,7 +42,6 @@ public class TCPServerThread extends Thread{
             byte[] buff =null;
             while(true) {
                 buff = new byte[4096];
-                int r = ins.read(buff);
                 String receive  = new String(buff);
                 logger.info(receive);
                 if("".equals(receive) || buff[0] ==0){
@@ -57,14 +56,6 @@ public class TCPServerThread extends Thread{
 
                 Map<String, Object> contentMap = JsonUtil.jsonToMap(receive);
                 logger.info("=========转成JSON转成Map对象后"+contentMap.toString());
-//                JSONObject json = JsonUtil.fromJson(receive);
-//                String hh =  json.get("hashResult").toString();
-//                logger.info("hh======"+hh);
-
-//                Map <String,Object> map2 = JsonUtil.jsonToMap(receive);
-//                String hashResult = map2.get("hashResult").toString();
-//                logger.info("hashResult===="+hashResult);
-/*************************************************************************/
 
                 String []body = receive.split(",");
                 String []data = null;
@@ -75,27 +66,16 @@ public class TCPServerThread extends Thread{
                         map.put(data[0].trim(),data[1].trim());
                     }
 
-//                String type = map.get("type");
-//                String hash = map.get("hash_result");
-//                String exp_id = map.get("exp_id");
-//                String modId = map.get("mod_id");
-//                Integer proId = Integer.parseInt(exp_id);
-
                 String type = contentMap.get("type").toString();
                 String hash = contentMap.get("hash_result").toString();
                 String exp_id = contentMap.get("exp_id").toString();
                 String modId = contentMap.get("mod_id").toString();
                 Integer proId = Integer.parseInt(exp_id);
-
-
                 Device device = deviceService.queryByProAndMod(proId, modId);
                 Product product = productService.queryByProId(proId);
                 Module module = moduleService.queryByMod(modId);
-
                 String devName = module.getName();
                 Integer display = module.getDisplayType();
-
-
 
                 Map<String ,String> resMap = new HashMap<>();
                 //做鉴权管理,如果不是本公司的树莓派，连接断开
@@ -115,7 +95,6 @@ public class TCPServerThread extends Thread{
                     }
 //====================type==============================
                     if("50".equals(type)){
-//                    Map<String ,String> resMap = new HashMap<>();
                         //首先判断产品是否已经创建
                         int n = productService.productList(proId);
                         if(n<=0){
@@ -126,19 +105,7 @@ public class TCPServerThread extends Thread{
                             logger.info("产品未创建，请先创建产品！");
                             return;
                         }
-//                    System.out.println("hash===="+map.get("hashResult"));
-//                    System.out.println("proConfigService===="+proConfigService);
-//                    String snCode = ApplicationContextProvider.getBean(ProConfigService.class).querySNByHashResult(map.get("hashResult"));
-
-//                    logger.info("hashResult码为 "+map.get("hashResult")+" 的设备注册成功！");
-//                    logger.info("收到"+map.get("hashResult")+"发来的消息"+receive);
-
-//                    if(num == 0){
-//                        distributionData(buff,socket);
-//                        num++;
-//                    }
                     }else {
-//                    Map<String ,String> resMap = new HashMap<>();
                         resMap.put("type","TypeError");
                         resMap.put("hashResult",hash);
                         resMap.put("content","reg_err");
@@ -201,7 +168,6 @@ public class TCPServerThread extends Thread{
 //====================add or update device end =============================
                     try {
                         //添加树莓派跟用户的关联
-//                            Product product = productService.queryByProId(proId);
                         int num = raspberryUserMergeService.queryNumBySnCode(snCode);
                         RaspberryUserMerge raspberryUserMerge = new RaspberryUserMerge();
                         String userId = product.getUserId();
@@ -266,50 +232,12 @@ public class TCPServerThread extends Thread{
             logger.info("设备下线"+device);
             //解除绑定树莓派与用户的关联
             Product product = productService.queryByProId(proId);
-            String userId = product.getUserId();
-//            RaspberryUserMerge raspberryUserMerge = new RaspberryUserMerge();
-//            raspberryUserMerge.setUserId(userId);
-//            raspberryUserMerge.setSnCode(snCode);
             raspberryUserMergeService.deleteBySnCode(snCode);
-
             logger.info("解除用户跟树莓派的关联，TCPServer.socketMap的大小为："+TCPServer.socketMap.size());
             for(String key : TCPServer.socketMap.keySet()){
                 System.out.println(key+":"+TCPServer.socketMap.get(key));
             }
         }
     }
-
-        public  void distributionData( Socket socket) throws IOException {
-            //读取收到的消息
-
-//            String receive  = new String(buff);
-//            System.out.println("读取到客户端发送的来数据："+receive);
-//            String []body = receive.split(",");
-//            String []data = null;
-//            for(int i=0;i<body.length;i++){
-//                String body0 = body[i].replace("{","").replace("}","").replace("\"","");
-//                data = body0.split(":");
-//                map.put(data[0].trim(),data[1].trim());
-//            }
-            //注册消息，把socket put 进socketMap
-//            if(map.get("type").equals("01")){
-//                System.out.println("注册成功！");
-//                TCPServer.socketMap.put(map.get("hashResult"),socket);
-//                System.out.println("TCPServer.socketMap的大小为："+TCPServer.socketMap.size());
-//                for(String key : TCPServer.socketMap.keySet()){
-//                    System.out.println(key+":"+TCPServer.socketMap.get(key));
-//                }
-//                outs.write(("rtmp://121.33.214.30:21935/live/"+map.get("hashResult")).getBytes());
-//            }
-            OutputStream outs = socket.getOutputStream();
-            Map<String ,String> resMap = new HashMap<>();
-            resMap.put("type","09");
-            resMap.put("hashResult",map.get("hashResult"));
-            resMap.put("content","OK");//拼接一个拉流地址给前端
-            outs.write( JsonUtil.toJsonByte(resMap));
-//            outs.write(("rtmp://121.33.214.30:21935/live/"+map.get("hashResult")).getBytes());
-            outs.flush();
-        }
-
 
 }

@@ -2,11 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sendi.dao.ResourceDaoI">
-   <!-- <insert id="addResource" parameterType="com.sendi.entity.Resource">
-      insert into t_resource (dev_id, res_name )
-        values (#{devId}, #{resName})
-    </insert>
--->
+
     <insert id="addResource" parameterType="com.sendi.entity.Resource" >
         insert into t_resource
         <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -75,15 +71,6 @@
         </trim>
     </insert>
 
-
-
-    <delete id="delResource" parameterType="java.math.BigInteger">
-        delete from t_resource where dev_id = #{devId}
-    </delete>
-    <!--<select id="queryByName" parameterType="java.lang.String"-->
-            <!--resultType="com.sendi.entity.Resource">-->
-        <!--select * from t_resource where res_name = #{resName}-->
-    <!--</select>-->
     <select id="queryByDevID" parameterType="java.math.BigInteger"
             resultType="com.sendi.entity.Resource">
         select * from t_resource where dev_id = #{devId}
@@ -94,7 +81,7 @@
         select * from t_resource
         <where>
             <if test="devId!=null">
-                AND dev_id = #{devId}
+                and dev_id = #{devId}
             </if>
             <if test="resName!=null and resName!=''">
                 and res_name = #{resName}

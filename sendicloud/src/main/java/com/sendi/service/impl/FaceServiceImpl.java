@@ -208,11 +208,9 @@ public class FaceServiceImpl implements FaceService {
                 socket.close();
             }
             logger.info("---------IOExcepion:"+e.getMessage());
-            //todo 设备离线、解除用户与树莓派的绑定
             return offLine(snCode, hashResult);
         } catch (NullPointerException e) {
             logger.info("socket is null"+e.getMessage());
-            //todo 设备离线、解除用户与树莓派的绑定
             return offLine(snCode, hashResult);
         }
         return ResponseData.success(null);
@@ -224,11 +222,7 @@ public class FaceServiceImpl implements FaceService {
         Socket socket = null;
         String hashResult = proConfigDao.queryHashResultBySnCode(snCode);
         Map<String, Object> map = new HashMap<String, Object>(3);
-//        if("shoot".equals(content)){
-            map.put(Msg.TYPE_KEY, Msg.TYPE_00);
-//        } else {
-//            return ResponseData.fail("操作失败");
-//        }
+        map.put(Msg.TYPE_KEY, Msg.TYPE_00);
         map.put(Msg.HASHRESULT_KEY, hashResult);
         map.put(Msg.CONTENT_KEY, content);
         try {
@@ -236,12 +230,6 @@ public class FaceServiceImpl implements FaceService {
             outs = socket.getOutputStream();
             outs.write(JsonUtil.toJsonByte(map));
         } catch (IOException e) {
-//            if (outs != null) {
-//                outs.close();
-//            }
-//            if (socket != null) {
-//                socket.close();
-//            }
             logger.info("takePhoto======"+e.getMessage());
             return offLine(snCode,hashResult);
         } catch (NullPointerException e) {
@@ -253,7 +241,6 @@ public class FaceServiceImpl implements FaceService {
 
     @Override
     public void receiveImage(receiveImgBody revBody) {
-        ResponseData responseData = new ResponseData();
         if(revBody != null){
             if ("30".equals(revBody.getType())) {
                 Device dev = deviceService.queryByProAndMod(revBody.getExp_id(), revBody.getMod_id());
@@ -263,24 +250,21 @@ public class FaceServiceImpl implements FaceService {
                 String flag = revBody.getFlag();
                 String token = revBody.getWebtoken();
                 logger.info(valued.length()+"");
-
+                //按1024个字符串来给图片的Base64编码分段
                 List<String> list =  getStrList(valued,1024);
                 for(int i=0;i<list.size();i++) {
-//                    System.out.println(list.get(i));
 //                    logger.info("图片片段"+list.get(i));
                     ImageData imageData = new ImageData();
                     imageData.setDevId(dev.getId());
                     imageData.setSortId(i);
                     imageData.setValued(list.get(i));
                     imageData.setFlag(flag);
-//                Timestamp time = new Timestamp(Long.parseLong(inTime));
                     Timestamp time = new Timestamp(inTime);
-//                    logger.info("设备端的发送时间：" + time);
                     imageData.setSendTime(time);
                     imageDataService.addData(imageData);
                     logger.info("添加imageData数据成功");
                 }
-//**********************************响应到前端********************************************
+        //************响应到前端*****************
                 Map<String, String> dataMap = new HashMap<>();
                 dataMap.put("flag", flag);
                 dataMap.put("token", token);
@@ -299,6 +283,12 @@ public class FaceServiceImpl implements FaceService {
         }
     }
 
+    /**
+     * 设备下线，并解除用户与树莓派的关联
+     * @param snCode
+     * @param hashResult
+     * @return
+     */
     public ResponseData offLine(String snCode, String hashResult){
         deviceService.updateOfflineBySnCode(snCode);
         raspberryUserMergeService.deleteBySnCode(snCode);
@@ -306,6 +296,13 @@ public class FaceServiceImpl implements FaceService {
         logger.info("FaceServiceImpl"+ResponseData.fail("发送失败，设备已离线"));
         return ResponseData.fail("发送失败，设备已离线");
     }
+
+    /**
+     *  以下三个方法是用来按长度截取图片的Base64编码
+     * @param inputString
+     * @param length
+     * @return
+     */
     public  List<String> getStrList(String inputString, int length) {
         int size = inputString.length() / length;
         if (inputString.length() % length != 0) {
@@ -314,9 +311,7 @@ public class FaceServiceImpl implements FaceService {
         return getStrList(inputString, length, size);
     }
 
-
-    public  List<String> getStrList(String inputString, int length,
-                                          int size) {
+    public  List<String> getStrList(String inputString, int length, int size) {
         List<String> list = new ArrayList<String>();
         for (int index = 0; index < size; index++) {
             String childStr = substring(inputString, index * length, (index + 1) * length);
@@ -326,13 +321,15 @@ public class FaceServiceImpl implements FaceService {
     }
 
     public  String substring(String str, int f, int t) {
-        if (f > str.length())
+        if (f > str.length()){
             return null;
+        }
         if (t > str.length()) {
             return str.substring(f, str.length());
         } else {
             return str.substring(f, t);
         }
     }
+
 }
 

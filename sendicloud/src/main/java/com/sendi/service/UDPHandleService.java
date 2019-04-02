@@ -86,8 +86,8 @@ public abstract class UDPHandleService {
      *
      * 发送obserce
      * @param res 资源名称
-     * @param low
-     * @param high
+     * @param low MessageID 低位
+     * @param high MessageID 高位
      * @param packet 数据包
      * @param socket
      */
@@ -96,8 +96,10 @@ public abstract class UDPHandleService {
         try {
             byte []cc={(byte)0x40,(byte)0x01,(byte)high,(byte)low,(byte)0x60};//observe
             DatagramPacket response;
-            byte []name = res.getBytes();//temperature
-            byte []temp;                //中间数组，用来合并两个数组
+            //例如temperature
+            byte []name = res.getBytes();
+            //中间数组，用来合并两个数组
+            byte []temp;
             if(name.length<13){
                 temp = new byte[cc.length+1];
                 for(int i=0;i<cc.length;i++){

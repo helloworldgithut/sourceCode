@@ -2,7 +2,7 @@ package com.sendi.config;
 
 /***
     * @Author Mengfeng Qin
-    * @Description
+    * @Description 常用的静态常量
     * @Date 2019/3/26 18:14
 */
 public class Msg {

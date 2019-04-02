@@ -8,7 +8,7 @@ import com.sendi.utils.ResponseData;
  */
 public interface PhotoService {
     /**
-     *
+     * COAP发送拍照指令到设备
      * @param deviceInstructions
      * @return
      * @throws Exception

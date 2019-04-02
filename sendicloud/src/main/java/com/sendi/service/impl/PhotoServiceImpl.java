@@ -26,8 +26,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Autowired
     private RedisUtil redisUtil;
     /**
-     * 发送指令给设备拍摄照片
-     *
+     * CoAP发送指令给设备拍摄照片
      * @param deviceInstructions
      * @return
      * @throws Exception
@@ -38,7 +37,6 @@ public class PhotoServiceImpl implements PhotoService {
         List<Short> list = CoapServer.changeMessageID();
         short high = list.get(0), low = list.get(1);
         String content = "shoot,"+deviceInstructions.getContent();
-        logger.info("==== take photo : "+content);
         byte []post = {(byte)0x40,(byte)0x02,(byte)high,(byte)low};
         byte []name = deviceInstructions.getResName().getBytes();
         byte format[]={(byte)0x11,(byte)0x00};
@@ -55,7 +53,6 @@ public class PhotoServiceImpl implements PhotoService {
             }
             String getMsg = high + "" + low;
             Thread.sleep(3000);
-//            if(TransactionServer.postMsgID.containsKey(getMsg)){
             if(redisUtil.hasKey(getMsg)){
                 logger.info(Arrays.toString(resName));
                 logger.info("PhotoService收到回复：" + deviceInstructions);
@@ -63,7 +60,7 @@ public class PhotoServiceImpl implements PhotoService {
             }else {
                 logger.info("重发：" + deviceInstructions);
                 if (count > countNum) {
-                    logger.info("超过重发次数："+count+"==>" + deviceInstructions);
+                    logger.info("超过重发次数："+count+"，重发结束==>" + deviceInstructions);
                     break;
                 }
                 count++;

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 /**
     * @Author Mengfeng Qin
-    * @Description
+    * @Description 上传文件配置
     * @Date 2019/3/26 18:15
 */
 @Configuration

@@ -45,7 +45,7 @@ public class UDPHandleThread implements Runnable {
         } else if (data[0] == (byte) 0x60 && data[1] == (byte) 0x44) {
             //post/put
             logger.info("Post/Put 的响应MsgID:"+data[2]+""+data[3]);
-//            TransactionServer.postMsgID.put(data[2] + "" + data[3], packet);
+
             redisUtil.set(data[2] + "" + data[3], content, 30);
 
             logger.info("Post/Put 的响应" + content);

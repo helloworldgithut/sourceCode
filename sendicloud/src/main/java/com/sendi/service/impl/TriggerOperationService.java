@@ -16,8 +16,4 @@ public class TriggerOperationService {
         return triggerOperation;
     }
 
-    public List<TriggerOperation> queryAll(){
-        List<TriggerOperation> list = triggerOperationDaoI.queryAll();
-        return list;
-    }
 }

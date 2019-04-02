@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,11 +22,6 @@ public class TriggerServiceImpl {
     @Autowired
     private TriggerOperationDaoI triggerOperationDaoI;
 
-    public List<Integer> query(BigInteger devId, Integer resId){
-        List<Integer> list = triggerDaoI.query(devId, resId);
-        return list;
-    }
-
     public List<Trigger> queryAll(){
         List<Trigger> list = triggerDaoI.queryAll();
         return list;
@@ -35,7 +29,6 @@ public class TriggerServiceImpl {
 
     public SimpleResponse delete(Integer id){
         logger.info("触发器删除：前端发来的请求：triggerId:"+id);
-//        Trigger trigger = triggerDaoI.queryById(id);
         SimpleResponse response =new SimpleResponse();
         if(TriggerPool.trigResMap.containsKey(id)){
             int resId = TriggerPool.trigResMap.get(id);
@@ -70,9 +63,8 @@ public class TriggerServiceImpl {
         SimpleResponse response = new SimpleResponse();
 
         if (Objects.nonNull(trigger)) {
-            Integer resId = trigger.getOpertionResId();
+//            Integer resId = trigger.getOpertionResId();
 //            TriggerPool.triggers.remove(resId);
-
             TriggerDto dto = new TriggerDto();
             dto.setTriggerId(trigger.getId());
             dto.setTriggerResId(trigger.getOpertionResId());
@@ -84,8 +76,6 @@ public class TriggerServiceImpl {
             dto.setExecuteDevID(trigger.getExecuteDevId());
 
             //触发值
-//            TTriggerOperationExample operationExample = new TTriggerOperationExample();
-//            operationExample.createCriteria().andTrigIdEqualTo(trigger.getId());
             List<TriggerOperation> operations = triggerOperationDaoI.queryByTrigId(trigger.getId());
             List<TriggerVal> triggerVals = new ArrayList<>();
             for (TriggerOperation operation : operations) {
@@ -122,7 +112,6 @@ public class TriggerServiceImpl {
         logger.info("触发器开关：前端发来的请求：triggerId:"+triggerId+" ,state:"+state);
         SimpleResponse response = new SimpleResponse();
         try {
-//            triggerDaoI.updateStateById(triggerId);
             int resId = TriggerPool.trigResMap.get(triggerId);
             TriggerPool.updateTriggerState(resId,state);
             response.setResult(true);

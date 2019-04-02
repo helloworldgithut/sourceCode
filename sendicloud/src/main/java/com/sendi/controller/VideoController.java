@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-
+/***
+    * @Author Mengfeng Qin
+    * @Description 实时视频传输接口
+    * @Date 2019/3/29 10:57
+*/
 @Api(value = "VideoController ", tags = {" 实时视频接口"}, description = "获取实时视频流")
 @Controller
 @RequestMapping("/stream")

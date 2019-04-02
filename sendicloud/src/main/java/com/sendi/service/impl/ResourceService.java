@@ -30,13 +30,6 @@ public class ResourceService {
 //        return  res;
 //    }
 
-    public void  delResource (Long devId){
-        try{
-            rdi.delResource(devId);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
 
     public List<Resource> queryByDevID(BigInteger devId){
         List<Resource> list = rdi.queryByDevID(devId);

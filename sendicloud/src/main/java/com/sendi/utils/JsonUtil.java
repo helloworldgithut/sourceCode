@@ -6,7 +6,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.Map;
-
+/***
+    * @Author Mengfeng Qin
+    * @Description Json工具类
+    * @Date 2019/4/1 18:29
+*/
 public class JsonUtil {
 
     public static String toJSONString(Object o) {
@@ -40,61 +44,4 @@ public class JsonUtil {
         return toJSONString(bean).getBytes();
     }
 
-//    public static void main(String[] args) {
-//        byte[] a = JsonUtil.toJsonByte(new Coordinate(2, 0));
-//        System.out.println(JsonUtil.toJSONString(new Coordinate(2, 0)));
-//        Coordinate c = (Coordinate) JsonUtil.parseObject(new String(a), Coordinate.class);
-//        System.out.println(c);
-//    }
-
-//    public static BodyObj resolveBody(String body){
-//        JSONObject jsonMsg;
-//        BodyObj obj = new BodyObj();
-//        try {
-//            jsonMsg = new JSONObject();
-//            obj.setType(jsonMsg.getString("type"));
-//            obj.setImei(jsonMsg.getString("imei"));
-//            obj.setMsg(jsonMsg.getString("msg"));
-//
-//            return obj;
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            return obj;
-//        }
-//    }
-
-    public static class BodyObj {
-        private Object msg;
-        private String type;
-        private String imei;
-
-        public Object getMsg() {
-            return msg;
-        }
-
-        public void setMsg(Object msg) {
-            this.msg = msg;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getImei() {
-            return imei;
-        }
-
-        public void setImei(String imei) {
-            this.imei = imei;
-        }
-
-        @Override
-        public String toString() {
-            return "{" + "msg:" + this.msg + ", type:" + this.type  +", imei:" + this.imei + '}';
-        }
-    }
 }

@@ -9,12 +9,11 @@ public class MessageUtil {
 
     /**
      * 拼接数据
-     *
-     * @param post2
-     * @param name
-     * @param payload
-     * @param format
-     * @return
+     * @param post2 post请求
+     * @param name 资源名称
+     * @param payload 负载内容
+     * @param format 格式（42 text/50 json）
+     * @return 拼接完整的字节数组（数据包）
      */
     public static byte[] packData(byte[] post2, byte[] name, byte[] payload, byte format[]) throws Exception {
         int len;
@@ -31,7 +30,8 @@ public class MessageUtil {
             byte n = (byte) len;
             temp[post.length] = n;
         } else if (name.length > 13) {
-            int num = len - 189;//0xbd
+            //0xbd
+            int num = len - 189;
             byte n = (byte) num;
             temp[post.length] = (byte) 0xbd;
             temp[post.length + 1] = n;
@@ -46,7 +46,6 @@ public class MessageUtil {
     }
 
     /**
-     *
      * @param post2
      * @param name
      * @return
@@ -66,7 +65,7 @@ public class MessageUtil {
             byte n = (byte) len;
             temp[post.length] = n;
         } else if (name.length > 13) {
-            int num = len - 189;//0xbd
+            int num = len - 189;
             byte n = (byte) num;
             temp[post.length] = (byte) 0xbd;
             temp[post.length + 1] = n;

@@ -3,14 +3,15 @@ package com.sendi.service;
 import com.sendi.entity.DeviceInstructions;
 import com.sendi.utils.ResponseData;
 
-/**
- *COAP协议接入的设备指令下发逻辑接口
- * Created by fengzm on 2019/1/28.
- */
+/***
+    * @Author Mengfeng Qin
+    * @Description COAP协议接入的设备指令下发逻辑接口
+    * @Date 2019/3/29 11:08
+*/
 public interface DeviceInstructService {
 
     /**
-     *读
+     *读取
      * @param deviceInstructions
      * @return
      * @throws Exception
@@ -18,8 +19,7 @@ public interface DeviceInstructService {
        ResponseData  readResource(DeviceInstructions deviceInstructions) throws  Exception ;
 
     /**
-     *
-     * 写
+     * 写入
      * @param deviceInstructions
      * @return
      * @throws Exception
@@ -32,9 +32,6 @@ public interface DeviceInstructService {
      * @return
      * @throws Exception
      */
-
     ResponseData  excuteResource(DeviceInstructions deviceInstructions) throws  Exception ;
-
-
 
 }

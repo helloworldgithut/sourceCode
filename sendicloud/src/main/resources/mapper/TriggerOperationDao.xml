@@ -2,95 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sendi.dao.TriggerOperationDaoI">
+
     <select id="queryByTrigId" resultType="com.sendi.entity.TriggerOperation">
         SELECT * from t_trigger_operation where trig_id=#{trigId};
     </select>
-    <select id="queryAll" resultType="com.sendi.entity.TriggerOperation">
-        SELECT * from t_trigger_operation;
-    </select>
-    <!--<update id="updateStateById" parameterType="java.lang.Integer">-->
-    <!--update `t_trigger`-->
-    <!--<set>-->
-        <!--<if test="trigName != null">-->
-            <!--`trig_name` = #{trigName,jdbcType=VARCHAR},-->
-        <!--</if>-->
-        <!--<if test="createTime != null">-->
-            <!--`create_time` = #{createTime,jdbcType=TIMESTAMP},-->
-        <!--</if>-->
-        <!--<if test="userId != null">-->
-            <!--`user_id` = #{userId,jdbcType=VARCHAR},-->
-        <!--</if>-->
-        <!--<if test="proId != null">-->
-            <!--`pro_id` = #{proId,jdbcType=INTEGER},-->
-        <!--</if>-->
-        <!--<if test="operationType != null">-->
-            <!--`operation_type` = #{operationType,jdbcType=VARCHAR},-->
-        <!--</if>-->
-        <!--<if test="appId != null">-->
-            <!--`app_id` = #{appId,jdbcType=INTEGER},-->
-        <!--</if>-->
-        <!--<if test="executeDevId != null">-->
-            <!--`execute_dev_id` = #{executeDevId,jdbcType=BIGINT},-->
-        <!--</if>-->
-        <!--<if test="executeCmdType != null">-->
-            <!--`execute_cmd_type` = #{executeCmdType,jdbcType=VARCHAR},-->
-        <!--</if>-->
-        <!--<if test="executeResId != null">-->
-            <!--`execute_res_id` = #{executeResId,jdbcType=INTEGER},-->
-        <!--</if>-->
-        <!--<if test="executeResName != null">-->
-            <!--`execute_res_name` = #{executeResName,jdbcType=VARCHAR},-->
-        <!--</if>-->
-        <!--<if test="executeCmdContent != null">-->
-            <!--`execute_cmd_content` = #{executeCmdContent,jdbcType=VARCHAR},-->
-        <!--</if>-->
-        <!--<if test="opertionResId != null">-->
-            <!--`opertion_res_id` = #{opertionResId,jdbcType=INTEGER},-->
-        <!--</if>-->
-        <!--<if test="opertionDevId != null">-->
-            <!--`opertion_dev_id` = #{opertionDevId,jdbcType=BIGINT},-->
-        <!--</if>-->
-        <!--<if test="dataType != null">-->
-            <!--`data_type` = #{dataType,jdbcType=VARCHAR},-->
-        <!--</if>-->
-        <!--<if test="state != null">-->
-            <!--`state` = #{state,jdbcType=INTEGER},-->
-        <!--</if>-->
-    <!--</set>-->
-    <!--where `id` = #{id,jdbcType=INTEGER}-->
-<!--</update>-->
 
-
-    <!--<insert id="addTriggerOperation" parameterType="com.sendi.entity.TriggerOperation">-->
-        <!--insert into `t_trigger_operation`-->
-        <!--<trim prefix="(" suffix=")" suffixOverrides=",">-->
-            <!--<if test="id != null">-->
-                <!--`id`,-->
-            <!--</if>-->
-            <!--<if test="optContent != null">-->
-                <!--`opt_content`,-->
-            <!--</if>-->
-            <!--<if test="optType != null">-->
-                <!--`opt_type`,-->
-            <!--</if>-->
-            <!--<if test="trigId != null">-->
-                <!--`trig_id`,-->
-            <!--</if>-->
-        <!--</trim>-->
-        <!--<trim prefix="values (" suffix=")" suffixOverrides=",">-->
-            <!--<if test="id != null">-->
-                <!--#{id,jdbcType=INTEGER},-->
-            <!--</if>-->
-            <!--<if test="optContent != null">-->
-                <!--#{optContent,jdbcType=VARCHAR},-->
-            <!--</if>-->
-            <!--<if test="optType != null">-->
-                <!--#{optType,jdbcType=VARCHAR},-->
-            <!--</if>-->
-            <!--<if test="trigId != null">-->
-                <!--#{trigId,jdbcType=INTEGER},-->
-            <!--</if>-->
-        <!--</trim>-->
-    <!--</insert>-->
 </mapper>
 

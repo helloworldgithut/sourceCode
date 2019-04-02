@@ -49,7 +49,9 @@ public  class TriggerPool {
 //        for(Integer res: triggers.keySet()){
 //            logger.info("trigger缓存中的resid:"+res+" ,value:"+triggers.get(res));
 //        }
-        if (Objects.isNull(triggerDto)) return;
+        if (Objects.isNull(triggerDto)){
+            return;
+        }
 
         logger.info(resId + "触发器过滤数据: " + triggerDto.getExecuteDevID());
         //过滤掉非数字类型的触发器
@@ -65,7 +67,9 @@ public  class TriggerPool {
         String cmdContent = triggerDto.getExecuteCmd();
         BigInteger devId = BigInteger.valueOf(triggerDto.getExecuteDevID());
         // read /write /execute
-        if (StringUtils.isEmpty(cmdType)) return;
+        if (StringUtils.isEmpty(cmdType)){
+            return;
+        }
 
         //对哪个资源下发什么指令
         DeviceInstructions deviceInstructions = new DeviceInstructions();
@@ -212,12 +216,8 @@ public  class TriggerPool {
         return doExecute;
     }
 
-
-
-
     /**
      * 双值比较，判断触发条件是否有交集
-     *
      * @param triggerVals 判断触发条件是否有交集
      * @return
      */

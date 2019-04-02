@@ -16,17 +16,8 @@ public class RaspberryUserMergeService {
        raspberryUserMergeDaoI.addRaspberryUserMerge(raspberryUserMerge);
     }
 
-    public void deleteRaspberryUserMerge(String snCode, String userId){
-        raspberryUserMergeDaoI.deleteRaspberryUserMerge(snCode, userId);
-    }
     public void deleteBySnCode(String snCode){
         raspberryUserMergeDaoI.deleteBySnCode(snCode);
-    }
-
-    public int queryBySnCodeAndUserId(String snCode,String userId){
-        List<RaspberryUserMerge> list = raspberryUserMergeDaoI.queryBySnCodeAndUserId(snCode,userId);
-        int n = list==null?0:list.size();
-        return n;
     }
 
     public int queryNumBySnCode(String snCode){

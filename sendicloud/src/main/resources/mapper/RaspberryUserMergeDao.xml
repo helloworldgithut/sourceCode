@@ -28,18 +28,10 @@
         </trim>
     </insert>
 
-    <delete id="deleteRaspberryUserMerge" >
-        delete from raspberry_user_merge
-        where sn_code = #{snCode} and user_id = #{userId}
-    </delete>
     <delete id="deleteBySnCode" parameterType="java.lang.String">
         delete from raspberry_user_merge
         where sn_code = #{snCode}
     </delete>
-    <select id="queryBySnCodeAndUserId" resultType="com.sendi.entity.RaspberryUserMerge">
-        select * from raspberry_user_merge
-        where sn_code = #{snCode} and user_id = #{userId}
-    </select>
 
     <select id="queryNumBySnCode" resultType="com.sendi.entity.RaspberryUserMerge">
         select * from raspberry_user_merge

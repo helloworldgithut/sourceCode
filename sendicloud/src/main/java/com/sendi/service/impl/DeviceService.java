@@ -14,27 +14,10 @@ public class DeviceService {
     @Autowired
     private DeviceDaoI deviceDaoI;
 
-    public int queryBySncode(String snCode){
-        List<Device> list =deviceDaoI.queryBySnCode(snCode);
-        int n = list==null?0:list.size();
-        return n;
-    }
-//    public Device queryAll(Device device){
-//        Device dev = deviceDaoI.query(device);
-//        return  dev;
-//    }
-//    public Device queryBySnCode(String snCode){
-//        Device dev = deviceDaoI.queryBySnCode(snCode);
-//        return  dev;
-//    }
-
     public void updateByProAndMod(Device device){
         deviceDaoI.updateByProAndMod(device);
     }
 
-    public void updateOnlineBySnCode(String snCode){
-        deviceDaoI.updateOnlineBySnCode(snCode);
-    }
     public void updateOfflineBySnCode(String snCode){
         deviceDaoI.updateOfflineBySnCode(snCode);
     }

@@ -41,32 +41,14 @@ public class TCPServer implements Runnable{
             ServerSocket server = new ServerSocket(8001);
             while(true){
                 Socket socket =server.accept();
-
                 new TCPServerThread(socket).start();
-
                 count++;//客户端数量增加
                 System.out.println("客户端数量为:" + count);
                 InetAddress address = socket.getInetAddress();
                 int port = socket.getPort();
                 System.out.println("客户端IP：" + address.getHostAddress()+""+address+"  port:"+port);
                 //更新设备状态；添加IP ：端口
-
             }
-
-//            while(true){
-//                Socket socket = server.accept();
-//                InputStream is = socket.getInputStream();
-//                byte[] buff = new byte[1024];
-//
-//                InetAddress address = socket.getInetAddress();
-//                int port = socket.getPort();
-//                while (-1!=(is.read(buff))){
-//                     receive = new String(buff);
-//                    System.out.println("IP:"+address+" PORT:"+port+"content:"+receive);
-//                }
-//                is.close();
-//                socket.close();
-//            }
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,21 +57,13 @@ public class TCPServer implements Runnable{
         }
     }
 
-
     @Scheduled(cron = "*/30 * * * * *")
     public void scheduled2(){
         long d = System.currentTimeMillis();
         for(String key : socketMap.keySet()){
-//            long result = d - lifeMap.get(key);
-//            logger.info(key+ " : "+lifeMap.get(key)+"  result "+result);
-//            Device device = deviceService.queryById(key);
-//            if(result > 150000){
-//                deviceService.updateStateById(device);
-//                logger.info("已更新状态为离线的设备"+device);
-//            }
             String snCode = raspberryService.querySNByHashResult(key);
-            logger.info("每30s刷新一次"+snCode);
-            logger.info("socketMap.Size"+socketMap.size()+"keySet");
+//            logger.info("每30s刷新一次"+snCode);
+//            logger.info("socketMap.Size"+socketMap.size()+"keySet");
             if(socketMap.get(key) == null){
                 deviceService.updateOfflineBySnCode(snCode);
                 logger.info("设备"+snCode+" 已下线");

@@ -42,12 +42,6 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
     @Autowired
     private RaspberryService raspberryService;
     @Autowired
-    private TriggerServiceImpl triggerService;
-    @Autowired
-    private TriggerOperationService triggerOperationService;
-    @Autowired
-    private TriggerExecuteService triggerExecuteService;
-    @Autowired
     private RedisUtil redisUtil;
     /**
      * 报文处理方法
@@ -161,7 +155,6 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
 //        if(TriggerPool.isExecute.containsKey(resId)){
         if(TriggerPool.triggers.containsKey(resId)){
             TriggerPool.thresholdFilter(resId,val);
-//            logger.info("触发器执行完毕？");
         }
 
     }
@@ -357,7 +350,7 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
     }
 
     /**
-     *
+     * fasong
      * @param deviceInstructions
      */
     public void sendEnd(DeviceInstructions deviceInstructions) {
@@ -407,45 +400,4 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
             }
         }
     }
-
-    /**
-     * 触发器触发后发送相应的指令
-     */
-    public void sendCMD(Integer trigId, String resName) {
-        TriggerExecute triggerExecute = triggerExecuteService.queryByTrigId(trigId);
-
-        DeviceInstructions deviceInstructions = new DeviceInstructions();
-        deviceInstructions.setDevId(triggerExecute.getDevId());
-        deviceInstructions.setResName(triggerExecute.getResName());
-        deviceInstructions.setHandleType(triggerExecute.getCmdType());
-        deviceInstructions.setContent(triggerExecute.getCmdContent());
-
-        if(triggerExecute.getCmdType().equals(Msg.READ)){
-            try {
-                deviceInstructService.readResource(deviceInstructions);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }else if(triggerExecute.getCmdType().equals(Msg.WRITE)){
-            try {
-                deviceInstructService.writeResource(deviceInstructions);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if(triggerExecute.getCmdType().equals(Msg.EXECUTE)){
-            try {
-                deviceInstructService.excuteResource(deviceInstructions);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-
-
-
-
-
-
 }

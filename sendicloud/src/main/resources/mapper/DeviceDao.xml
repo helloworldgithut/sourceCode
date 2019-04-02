@@ -2,15 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sendi.dao.DeviceDaoI">
-    <!--<select id="queryBySnCode" parameterType="com.sendi.entity.Device"-->
-            <!--resultType="com.sendi.entity.Device">-->
-        <!--select * from t_device where sn_code = #{snCode}-->
-    <!--</select>-->
-
-    <select id="queryAll" parameterType="com.sendi.entity.Device"
-            resultType="com.sendi.entity.Device">
-        select * from t_device where sn_code = #{snCode}
-    </select>
 
     <select id="queryBySnCode" parameterType="java.lang.String"
             resultType="com.sendi.entity.Device">
@@ -39,15 +30,11 @@
         where pro_id = #{proId} and mod_id = #{modId}
     </update>
 
-    <update id="updateOnlineBySnCode" parameterType="java.lang.String">
-        update t_device set state=1
-        where sn_code = #{snCode}
-    </update>
-
     <update id="updateOfflineBySnCode" parameterType="java.lang.String">
         update t_device set state=0
         where sn_code = #{snCode}
     </update>
+
     <update id="updateOnlineById" parameterType="java.math.BigInteger">
         update t_device set state=1
         where id = #{id}

@@ -43,7 +43,7 @@ public class VideoServiceImpl implements VideoService {
         Map<String, String> resMap = new HashMap<>(3);
         logger.info("前端发来的请求："+reqBody);
         String snCode = reqBody.getSnCode();
-        String url = reqBody.getContent();//拉流地址
+        String url = reqBody.getContent();
         String hashResult = raspberryDao.queryHashResultBySnCode(snCode);
         Socket socket;
         try {
@@ -55,22 +55,21 @@ public class VideoServiceImpl implements VideoService {
             resMap.put(Msg.CONTENT_KEY,url);
             out.write(JsonUtil.toJsonByte(resMap));
         }catch (IOException e){
-            logger.info("---------IOExcepion");
-            //todo 设备离线、解除用户与树莓派的绑定
+            logger.info("---------IOExcepion"+e.getMessage());
+            // 设备离线、解除用户与树莓派的绑定
             deviceService.updateOfflineBySnCode(snCode);
             raspberryUserMergeService.deleteBySnCode(snCode);
-            logger.info(e.getMessage());
             TCPServer.socketMap.remove(hashResult);
-            return ResponseData.fail("---发送失败");
+            return ResponseData.fail("发送失败");
         }catch (NullPointerException e){
-            logger.info("socket is null");
-            //todo 设备离线、解除用户与树莓派的绑定
+            logger.info("socket is null"+e.getMessage());
+            // 设备离线、解除用户与树莓派的绑定
             deviceService.updateOfflineBySnCode(snCode);
             raspberryUserMergeService.deleteBySnCode(snCode);
             TCPServer.socketMap.remove(hashResult);
             return ResponseData.fail("发送失败，设备已离线");
         }
-        logger.info("===============已发送");
+        logger.info("=====推流地址已发送=======");
         return ResponseData.success(null);
     }
 }

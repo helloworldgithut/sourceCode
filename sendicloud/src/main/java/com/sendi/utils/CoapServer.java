@@ -76,39 +76,34 @@ public class CoapServer implements Runnable {
             try {
                 for (BigInteger key : lifeMap.keySet()) {
                     long result = d - lifeMap.get(key);
-                    logger.info("30s检查一次"+key + " : " + lifeMap.get(key) + "  result " + result);
+//                    logger.info("30s检查一次"+key + " : " + lifeMap.get(key) + "  result " + result);
                     Device device = deviceService.queryById(key);
                     if (result > 200000) {
                         if(device.getState()==0){
                             lifeMap.remove(key);
                         }else {
-                            deviceService.updateOfflineById(device.getId());
                             //设备下线后，资源不下线
-//                resourceService.updateOfflineByDevId(device.getId());
+                            deviceService.updateOfflineById(device.getId());
+//                            resourceService.updat eOfflineByDevId(device.getId());
+                           //如果全部设备都已经离线，解除树莓派与用户的关联
+//                            if(){
+//
+//                            }
                             String snCode = device.getSnCode();
-                            //解除绑定树莓派与用户的关系
                             //根据 userkey 查出user_id,删除 user_id、树莓派SN码  到 表raspberry_user_merge
-//                UserKey user = userKeyService.queryByKey(userKey);
                             raspberryUserMergeService.deleteBySnCode(snCode);
-                            logger.info("已更新状态为离线的COAP设备及关联的资源,下线设备ID："+device.getId());
+                            logger.info("已更新状态为离线的COAP设备,timeout:"+result+",下线设备ID："+device.getId());
                             lifeMap.remove(key);
                         }
-
-
-
-
                     }
                 }
             }catch (Exception e){
-
+                e.printStackTrace();
             }
-
         }
-
     }
     /**
      * msg_id 加1
-     *
      * @return mgs_id
      */
     public static synchronized List<Short> changeMessageID() {
