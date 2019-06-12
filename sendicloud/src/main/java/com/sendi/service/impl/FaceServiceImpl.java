@@ -1,13 +1,14 @@
 package com.sendi.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.sendi.config.Msg;
 import com.sendi.dao.RaspberryDaoI;
-import com.sendi.entity.Device;
-import com.sendi.entity.ImageData;
-import com.sendi.entity.receiveImgBody;
+import com.sendi.entity.*;
 import com.sendi.service.FaceService;
 import com.sendi.utils.*;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -128,7 +130,7 @@ public class FaceServiceImpl implements FaceService {
      * @throws Exception
      */
     @Override
-    public ResponseData start(String snCode, String content, MultipartFile file) throws Exception {
+    public ResponseData start(String snCode, String content,String token, MultipartFile file) throws Exception {
         OutputStream outs = null;
         Socket socket = null;
         String hashResult = proConfigDao.queryHashResultBySnCode(snCode);
@@ -143,6 +145,7 @@ public class FaceServiceImpl implements FaceService {
         map.put(Msg.TYPE_KEY, Msg.TYPE_03);
         map.put(Msg.HASHRESULT_KEY, hashResult);
         map.put(Msg.CONTENT_KEY, imgContent);
+        map.put("token",token);
         map.put("url",content);
         long start =System.currentTimeMillis();
 
@@ -153,7 +156,7 @@ public class FaceServiceImpl implements FaceService {
             outs.write(JsonUtil.toJsonByte(map));
 //            outs.flush();
 //            outs.close();
-            logger.info("**************发送后");
+            logger.info("**************发送到设备端后");
         } catch (Exception e) {
             if (outs != null) {
                 outs.close();
@@ -229,6 +232,7 @@ public class FaceServiceImpl implements FaceService {
             socket = TCPServer.socketMap.get(hashResult);
             outs = socket.getOutputStream();
             outs.write(JsonUtil.toJsonByte(map));
+            logger.info("已发送拍照指令到设备端");
         } catch (IOException e) {
             logger.info("takePhoto======"+e.getMessage());
             return offLine(snCode,hashResult);
@@ -270,7 +274,8 @@ public class FaceServiceImpl implements FaceService {
                 dataMap.put("token", token);
                 String dataStr = JSON.toJSONString(dataMap);
                 try {
-                    String response = HTTPUtil.sendPostJson("192.168.60.137", 8080, "/iot_aid/photo/show/import", dataStr, 15000);
+                    String response = HTTPUtil.sendPostJson("127.0.0.1", 8080, "/iot_aid/photo/show/import", dataStr, 15000);
+//                    String response = HTTPUtil.sendPostJson("192.168.60.137", 8080, "/iot_aid/photo/show/import", dataStr, 15000);
                     logger.info("前端返回：" + response);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -280,6 +285,38 @@ public class FaceServiceImpl implements FaceService {
             }
         }else {
             logger.info("****** data receive: body empty error ****** ");
+        }
+    }
+
+    @Override
+    public void receiveResponse(CompareResult compareResult) {
+        //type =52
+        String type = compareResult.getType();
+        String token = compareResult.getToken();
+        String content = compareResult.getContent();
+        Map<String, String> dataMap = new HashMap<>();
+        if ("52".equals(type)) {
+            if("OK".equals(content)){
+
+            }else if("ERROR".equals(content)){
+//                dataMap.put("token", token);
+//                dataMap.put("info","该图片不包含人脸，比对素材无效");
+                RequestBody requestBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("info", "该图片不包含人脸，比对素材无效")
+                        .addFormDataPart("token", token)
+                        .build();
+                HTTPUtil httpUtil = new HTTPUtil();
+                String resultText =httpUtil.okHttpPost(requestBody,"http://127.0.0.1:8080/iot_aid/experiment/rollback");
+//                String resultText =httpUtil.okHttpPost(requestBody,"http://192.168.60.137:8080/iot_aid/experiment/rollback");
+                JSONObject.parseObject(resultText);
+                logger.info("前端返回：" + resultText);
+            }
+
+//            String dataStr = JSON.toJSONString(dataMap);
+//                String response = HTTPUtil.sendPostJson("192.168.60.137", 8080, "/iot_aid/experiment/rollback", dataStr, 15000);
+//            logger.info("发送给前端的内容："+dataStr);
+//            logger.info("前端返回：" + resultText);
         }
     }
 
@@ -293,6 +330,7 @@ public class FaceServiceImpl implements FaceService {
         deviceService.updateOfflineBySnCode(snCode);
         raspberryUserMergeService.deleteBySnCode(snCode);
         TCPServer.socketMap.remove(hashResult);
+//        HTTPUtil.getResponse(device.getId(),new BigInteger("1"));
         logger.info("FaceServiceImpl"+ResponseData.fail("发送失败，设备已离线"));
         return ResponseData.fail("发送失败，设备已离线");
     }

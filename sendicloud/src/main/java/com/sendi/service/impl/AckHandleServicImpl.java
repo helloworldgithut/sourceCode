@@ -107,7 +107,8 @@ public class AckHandleServicImpl extends UDPHandleService {
     public void sentDiscover(DatagramPacket packet, String discoverKey, DatagramSocket socket){
         List<Short> list = CoapServer.changeMessageID();
         short high = list.get(0), low = list.get(1);
-        coapDiscover(high, low, packet,socket);
+//        coapDiscover(high, low, packet,socket);
+        coapDiscoverHasBlock(high, low, low, packet,socket);
         String msgIdStr = high + "" + low;
         //缓存msgID对应的信息
 //        TransactionServer.ResponID.put(msgIdStr,discoverKey);
@@ -116,7 +117,7 @@ public class AckHandleServicImpl extends UDPHandleService {
         for (;;) {
             String dicFail = null;
             try {
-                Thread.sleep(3000);
+                Thread.sleep(4000);
                 dicFail = redisUtil.get(discoverKey).toString();
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -129,11 +130,12 @@ public class AckHandleServicImpl extends UDPHandleService {
             if (msgIdStr.equals(dicFail)) {
                 break;
             } else {
-                if (count >= 3) {
+                if (count >= 2) {
                     break;
                 }
                 //重发
-                coapDiscover(high, low, packet,socket);
+//                coapDiscover(high, low, packet,socket);
+                coapDiscoverHasBlock(high, low, low, packet,socket);
                 count++;
             }
         }

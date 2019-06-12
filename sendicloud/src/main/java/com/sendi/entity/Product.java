@@ -15,4 +15,9 @@ public class Product {
     private String APIKey;//接口秘钥
     private String operator;//运营商
     private String userId;//用户ID
+    private Integer dataSecret;
+    private Integer submitStatus;
+    private String comment;
+    private String submitTime;
+    private String submitBatch;
 }

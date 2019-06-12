@@ -1,15 +1,18 @@
 package com.sendi.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.sendi.entity.Device;
 import com.sendi.entity.Module;
 import com.sendi.entity.Resource;
 import com.sendi.service.UDPHandleService;
 import com.sendi.utils.CoapServer;
+import com.sendi.utils.HTTPUtil;
 import com.sendi.utils.RedisUtil;
 import com.sendi.utils.TransactionServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -119,6 +122,9 @@ public class ResourceHandleServicImpl extends UDPHandleService {
                 device = deviceService.queryByProAndMod(device.getProId(),device.getModId());
                 logger.info("=============ADD Device"+device.getId());
                 deviceService.updateOnlineById(device.getId());
+                //添加上线通知
+                HTTPUtil.getResponse(device.getId(),new BigInteger("1"));
+
             }else{
                 //设备已经存在，更新设备信息，设备状态为在线
                 Module module = moduleService.queryByMod(modId);
@@ -134,9 +140,12 @@ public class ResourceHandleServicImpl extends UDPHandleService {
                 deviceService.updateById(device);
                 //更新state、在线/离线
                 deviceService.updateOnlineById(id);
-            }
-            BigInteger devId = device.getId();
+                 //添加上线通知
+                HTTPUtil.getResponse(device.getId(),new BigInteger("1"));
 
+            }
+
+            BigInteger devId = device.getId();
             //把设备下的资源state 都先置0（上次发现的）
             resourceService.updateOfflineByDevId(devId);
             Long uptime = System.currentTimeMillis();
@@ -212,21 +221,26 @@ public class ResourceHandleServicImpl extends UDPHandleService {
         int count = 0;
         for (; ; ) {
             sendGet(res, "op,tp", highGet, lowGet, packet, socket);
+//            for(int i=0;i<3;i++){
+//
+//            }
             try {
-                Thread.sleep(2000);
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            String mm = TransactionServer.getObsMsgID.get(devId + "" + res);
+            String mm = TransactionServer.revGetObsMsgID.get(devId + "" + res);
             logger.info("获取缓冲区的key:" + devId + "" + res);
             logger.info("++++++本地的 getObsMsgID key++++++++" + devId + "" + res + "==msgIdDtr=" + str);
             logger.info("++++++缓冲区 getObsMsgID key++++++++" + devId + "" + res + "==msgIdDtr=" + mm);
             if (str.equals(mm)) {
+//                //加空请求
+//                emptyGet(highGet, lowGet, packet, socket);
                 break;
             } else {
                 logger.info("Get重发的MsgId：" + highGet + "" + lowGet);
                 sendGet(res, "op,tp", highGet, lowGet, packet, socket);
-                if (count >= 4) {
+                if (count > 3) {
                     Resource resource = new Resource();
                     resource.setDevId(devId);
                     resource.setResName(res);
@@ -258,23 +272,32 @@ public class ResourceHandleServicImpl extends UDPHandleService {
         logger.info("=======str======"+str);
         int count = 0;
         for (;;){
+
             observeRes(res,high,low,packet,socket);
             try {
-                Thread.sleep(5000);
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 //            String kk = TransactionServer.obsMsgID.get(devId+""+res);
-            String kk = redisUtil.get(devId+""+res).toString();
+            boolean bl = redisUtil.hasKey(devId+""+res);
+            String kk = "";
+            if(bl){
+                kk = redisUtil.get(devId+""+res).toString();
+            }
             logger.info("==============="+devId+""+res);
             logger.info("++++++Observe msgID key++++++++"+devId+""+res+"==str="+str);
             logger.info("++++++Observe msgID key++++++++"+devId+""+res+"==RR="+kk);
             if(str.equals(kk)){
+//                deviceService.updateOnlineById(devId);
+//                //加空请求
+//                emptyGet(high, low, packet, socket);
+
                 break;
             }else  {
                 logger.info("Observe重发：" + str);
                 observeRes(res,high,low,packet,socket);
-                if(count >= 3) {
+                if(count > 3) {
                     break;
                 }
                 count ++;
@@ -345,7 +368,7 @@ public class ResourceHandleServicImpl extends UDPHandleService {
                 Short getHigh = Short.valueOf(getMsgId[0]);
                 Short getLow = Short.valueOf(getMsgId[1]);
                 String getStr = getHigh + "" + getLow;
-                String repGetStr = TransactionServer.getObsMsgID.get(devId + "" + getStr);
+                String repGetStr = TransactionServer.revGetObsMsgID.get(devId + "" + getStr);
                 int count = 0;
                 if (getStr.equals(repGetStr)) {
                     count++;
@@ -360,7 +383,7 @@ public class ResourceHandleServicImpl extends UDPHandleService {
                 Short observeHigh = Short.valueOf(observeMsg[0]);
                 Short observeLow = Short.valueOf(observeMsg[1]);
                 String obsStr = observeHigh + "" + observeLow;
-                String repObsStr = TransactionServer.getObsMsgID.get(devId + "" + obsStr);
+                String repObsStr = TransactionServer.revGetObsMsgID.get(devId + "" + obsStr);
                 if (obsStr.equals(repObsStr)) {
                     count++;
                     logger.info("observe收到回复，资源：" + s);

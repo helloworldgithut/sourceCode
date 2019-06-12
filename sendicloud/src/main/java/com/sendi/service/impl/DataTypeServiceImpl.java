@@ -105,15 +105,19 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
             case Msg.TYPE_00:
                 break;
             case Msg.TYPE_01:
+                //数值类型
                 this.handleType01(map, devId, resId);
                 break;
             case Msg.TYPE_02:
+                //字符串类型
                 this.handleType02(map, devId, resId);
                 break;
             case Msg.TYPE_03:
+                //图片类型
                 this.handleType03(map, devId, resId, packet, socket);
                 break;
             case Msg.TYPE_04:
+                //权限
                 this.handleType04(map, devId, resId, packet, socket);
                 break;
             default:
@@ -269,6 +273,7 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
                 dataMap.put("token",token);
                 String dataStr = JSON.toJSONString(dataMap);
                 try {
+//                    String response = HTTPUtil.sendPostJson("127.0.0.1",8080,"/iot_aid/photo/show/import", dataStr,15000);
                     String response = HTTPUtil.sendPostJson("192.168.60.137",8080,"/iot_aid/photo/show/import", dataStr,15000);
                     logger.info("前端返回："+response);
                 } catch (IOException e) {
@@ -291,6 +296,7 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
             logger.info(devId + " , " + resName + " , " + value + " , " + time);
             imageDataService.addData(imgData);
             logger.info("添加数据成功");
+
         }
     }
 
@@ -324,7 +330,8 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
         //权限
         if (value.indexOf("op=") != -1 && value.indexOf("tp=") != -1) {
             // 用于权限控制缓冲区
-            TransactionServer.getObsMsgID.put(devId + "" + resName, msgID);
+            TransactionServer.revGetObsMsgID.put(devId + "" + resName, msgID);
+            TransactionServer.revGetMsgID.add(msgID);
             logger.info("收到权限报文回复,放入缓冲区getObsMsgID：" + map);
             Resource resource = new Resource();
             resource.setDevId(devId);
@@ -344,6 +351,16 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
             }
             resource.setOp(op);
             resource.setTp(tp);
+            if(tp==1 || tp==2){
+                resource.setType(2);
+            }else if(tp==3 || tp==4 || tp==5){
+                resource.setType(1);
+            }else if(tp==6){
+                resource.setType(3);
+            }else {
+                logger.info("type undefine set default type=1");
+                resource.setType(1);
+            }
             resourceService.updateResource(resource);
             logger.info("================更新资源的权限：" + resource.toString());
         }
@@ -382,7 +399,7 @@ public class DataTypeServiceImpl  extends UDPHandleService implements DataTypeSe
                 logger.info("设备离线，发送失败");
             }
             try {
-                Thread.sleep(2000);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

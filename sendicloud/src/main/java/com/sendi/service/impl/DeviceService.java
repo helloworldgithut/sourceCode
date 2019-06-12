@@ -52,6 +52,11 @@ public class DeviceService {
         return list;
     }
 
+    public int queryOnlineByProId(Integer proId){
+        List<Device> list = deviceDaoI.queryOnlineByProId(proId);
+        return list.size();
+    }
+
     public void updateById(Device device){
        deviceDaoI.updateById(device);
     }

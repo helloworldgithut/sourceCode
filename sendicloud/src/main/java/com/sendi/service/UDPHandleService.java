@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 public abstract class UDPHandleService {
     protected Logger logger = LoggerFactory.getLogger(getClass());
-    protected final String saveUrl = "http://192.168.60.137:8080/iot_aid/photo/show/import";
+    protected final String saveUrl = "http://127.0.0.1:8080/iot_aid/photo/show/import";
     protected final String userKey = "user_id",hashKey = "hash_result",proKey = "exp_id",moduleKey = "mod_id";
     protected final String nameKey = "name", unitKey = "unit", timeKey = "time", valueKey = "value", sortIdKey = "sort_id", flagKey = "flag";
     protected final String beginStr = "begin", endStr = "end", str1 = "[{", str2 = "}]";
@@ -71,9 +71,42 @@ public abstract class UDPHandleService {
      */
     protected void coapDiscover(short high, short low, DatagramPacket packet,DatagramSocket socket) {
         try {
-            byte[] data4 = {(byte) 0x40, (byte) 0x01, (byte) high, (byte) low, (byte) 0xbb,
+            byte[] data4 = {(byte) 0x42, (byte) 0x01, (byte) high, (byte) low, (byte)low, (byte)low, (byte)0xbb,
                     (byte) 0x2E, (byte) 0x77, (byte) 0x65, (byte) 0x6C, (byte) 0x6C, (byte) 0x2D, (byte) 0x6B, (byte) 0x6E, (byte) 0x6F, (byte) 0x77, (byte) 0x6E, (byte) 0x04,
                     (byte) 0x63, (byte) 0x6F, (byte) 0x72, (byte) 0x65};
+            DatagramPacket response = new DatagramPacket(data4, data4.length, packet.getAddress(), packet.getPort());
+            socket.send(response);
+            logger.info("==========  sent discover  ===========" + response);
+        } catch (IOException e) {
+            logger.info("网络异常，sent discover fail");
+            e.printStackTrace();
+        }
+    }
+    /**
+     *
+     *发送discover
+     * @param high
+     * @param low
+     * @param packet
+     */
+    protected void coapDiscoverHasBlock(short high, short low, short token, DatagramPacket packet,DatagramSocket socket) {
+        try {
+            byte[] data4 = {(byte) 0x42, (byte) 0x01, (byte) high, (byte) low, (byte)token, (byte)token, (byte)0xbb,
+                    (byte) 0x2E, (byte) 0x77, (byte) 0x65, (byte) 0x6C, (byte) 0x6C, (byte) 0x2D, (byte) 0x6B, (byte) 0x6E, (byte) 0x6F, (byte) 0x77, (byte) 0x6E, (byte) 0x04,
+                    (byte) 0x63, (byte) 0x6F, (byte) 0x72, (byte) 0x65};
+            DatagramPacket response = new DatagramPacket(data4, data4.length, packet.getAddress(), packet.getPort());
+            socket.send(response);
+            logger.info("==========  sent discover  ===========" + response);
+        } catch (IOException e) {
+            logger.info("网络异常，sent discover fail");
+            e.printStackTrace();
+        }
+    }
+    protected void coapDiscoverHasBlock2(short high, short low, short token, DatagramPacket packet,DatagramSocket socket) {
+        try {
+            byte[] data4 = {(byte) 0x42, (byte) 0x01, (byte) high, (byte) low, (byte)token, (byte)token, (byte)0xbb,
+                    (byte) 0x2E, (byte) 0x77, (byte) 0x65, (byte) 0x6C, (byte) 0x6C, (byte) 0x2D, (byte) 0x6B, (byte) 0x6E, (byte) 0x6F, (byte) 0x77, (byte) 0x6E, (byte) 0x04,
+                    (byte) 0x63, (byte) 0x6F, (byte) 0x72, (byte) 0x65, (byte) 0xc1, (byte) 0x1e };
             DatagramPacket response = new DatagramPacket(data4, data4.length, packet.getAddress(), packet.getPort());
             socket.send(response);
             logger.info("==========  sent discover  ===========" + response);

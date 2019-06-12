@@ -17,20 +17,6 @@ public class ResourceService {
     @Autowired
     private ResourceDaoI rdi;
 
-    public void addResource (Resource resource){
-        try {
-            rdi.addResource(resource);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-//    public  Resource queryByName(String name){
-//        Resource res = rsi.queryByName(name);
-//        return  res;
-//    }
-
-
     public List<Resource> queryByDevID(BigInteger devId){
         List<Resource> list = rdi.queryByDevID(devId);
         return  list;

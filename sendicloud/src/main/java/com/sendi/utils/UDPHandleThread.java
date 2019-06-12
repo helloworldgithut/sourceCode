@@ -30,7 +30,15 @@ public class UDPHandleThread implements Runnable {
         if (data[0] == 97 && data[1] == 99 && data[2] == 107) {
             //收到 reok0/1
             type = 1;
-        } else if (data[1] == (byte) 0x45 && data[4] == (byte) 0xc1 && data[5] == (byte) 0x28) {
+        }else if (data[1] == (byte) 0x45 && data[6] == (byte) 0xc1 && data[7] == (byte) 0x28 && data[8] == (byte) 0xb1 ) {
+            //块传输，收到的资源块1 0x60 0x45 [] [] 0xc1 0x28 0xb1
+            type = 6;
+        }
+//        else if (data[1] == (byte) 0x45 && data[4] == (byte) 0xc1 && data[5] == (byte) 0x28 && data[6] == (byte) 0xb1 && data[7] == (byte) 0x16) {
+//            //块传输，收到的资源块2 0x60 0x45 [] [] 0xc1 0x28
+//            type = 7;
+//        }
+        else if (data[1] == (byte) 0x45 && data[6] == (byte) 0xc1 && data[7] == (byte) 0x28) {
             //收到的资源 0x60 0x45 [] [] 0xc1 0x28
             type = 2;
         } else if (data[0] == (byte) 0x50 && data[1] == (byte) 0x45) {

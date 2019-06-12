@@ -125,6 +125,10 @@
         select * from t_device where pro_id = #{proId}
     </select>
 
+    <select id="queryOnlineByProId" resultType="com.sendi.entity.Device">
+        select * from t_device where pro_id = #{proId} and state = 1
+    </select>
+
     <update id="updateById" parameterType="com.sendi.entity.Device">
         update t_device
         <set>

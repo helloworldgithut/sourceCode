@@ -109,9 +109,16 @@ public class CoapHandleThread implements Runnable {
         Product product = productService.queryByProId(proId);
         String userId = product.getUserId();
         String protocol = product.getProtocol();
+        Integer commitStatus = product.getSubmitStatus();
         //判断协议是否是COAP
         if(!("COAP".equals(protocol))){
             sendError();
+            logger.info("协议不匹配");
+            return;
+        }
+        if(commitStatus >= 1){
+            sendError();
+            logger.info("COAP-该产品已经提交过了");
             return;
         }
         //绑定树莓派与用户的关系;添加到关系表raspberry_user_merge
@@ -127,8 +134,7 @@ public class CoapHandleThread implements Runnable {
             if(!userId.equals(user)){
                 sendError();
                 logger.info("该树莓派已经注册，不能两个账户同时用一个树莓派！！");
-//                logger.info("用户1ID=="+userId);
-//                logger.info("用户2ID=="+user);
+                logger.info("用户1ID=="+userId+"用户2ID=="+user+"正在使用");
                 return;
             }
         }

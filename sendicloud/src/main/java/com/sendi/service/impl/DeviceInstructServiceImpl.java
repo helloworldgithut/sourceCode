@@ -1,5 +1,6 @@
 package com.sendi.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.sendi.dao.DeviceDaoI;
 import com.sendi.entity.Device;
 import com.sendi.entity.DeviceInstructions;
@@ -10,9 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /***
     * @Author Mengfeng Qin
@@ -42,16 +47,27 @@ public class DeviceInstructServiceImpl implements DeviceInstructService {
         byte[] get = {(byte) 0x40, (byte) 0x01, (byte) high, (byte) low};
         byte[] resName = MessageUtil.packData(get, name);
         for (; ; ) {
+
             //发送拼接好的读取指令
             ResponseData result = sendData(deviceInstructions, resName);
             if (result != null) {
                 return result;
             }
             String getMsg = deviceInstructions.getDevId() + "" + deviceInstructions.getResName() + high + "" + low;
-            Thread.sleep(3000);
+//            Thread.sleep(5000);
+            for(int i=0 ;i<2;i++){
+                Thread.sleep(2000);
+                if(redisUtil.hasKey(getMsg)) {
+                    logger.info("write收到回复：" + deviceInstructions);
+                    return ResponseData.success(null);
+
+                }
+            }
 //            logger.info("====redisUtil.hasKey():"+redisUtil.hasKey(getMsg));
             if (redisUtil.hasKey(getMsg)) {
                 logger.info("read 收到回复：" + deviceInstructions);
+                //加空请求
+//                emptyGet(high, low, packet, socket);
                 String content = redisUtil.get(getMsg).toString();
                 int start = content.indexOf("[");
                 int stop = content.indexOf("]");
@@ -59,6 +75,7 @@ public class DeviceInstructServiceImpl implements DeviceInstructService {
                 return ResponseData.success(content);
             } else {
                 logger.info("read重发：" + deviceInstructions);
+
                 if (count > countNum) {
                     logger.info("read超过重发次数，重发结束：" + deviceInstructions);
                     break;
@@ -89,6 +106,7 @@ public class DeviceInstructServiceImpl implements DeviceInstructService {
         System.arraycopy(content1, 0, payload, flag.length, content1.length);
         byte[] resName = MessageUtil.packData(put, name, payload, format);
         for ( ; ; ) {
+
             //发送拼接好的写入指令
             ResponseData result = sendData(deviceInstructions, resName);
             if (result != null) {
@@ -96,7 +114,15 @@ public class DeviceInstructServiceImpl implements DeviceInstructService {
             }
             String getMsg = high + "" + low;
 //            logger.info("=========Write　getMsg======"+getMsg+":"+redisUtil.get(getMsg));
-            Thread.sleep(3000);
+//            Thread.sleep(8000);
+            for(int i=0 ;i<2;i++){
+                Thread.sleep(2000);
+                if(redisUtil.hasKey(getMsg)) {
+                    logger.info("write收到回复：" + deviceInstructions);
+                    return ResponseData.success(null);
+
+                }
+            }
             if(redisUtil.hasKey(getMsg)){
                 logger.info("write收到回复：" + deviceInstructions);
                 return ResponseData.success(null);
@@ -133,6 +159,7 @@ public class DeviceInstructServiceImpl implements DeviceInstructService {
         System.arraycopy(content1, 0, payload, flag.length, content1.length);
         byte[] resName = MessageUtil.packData(post, name, payload, format);
         for (; ; ) {
+
             //发送拼接好的执行指令
             ResponseData result = sendData(deviceInstructions, resName);
             if (result != null) {
@@ -140,7 +167,15 @@ public class DeviceInstructServiceImpl implements DeviceInstructService {
             }
             String getMsg = high + "" + low;
 //            logger.info("=========Excute　getMsg======"+getMsg);
-            Thread.sleep(3000);
+            for(int i=0 ;i<2;i++){
+                Thread.sleep(2000);
+                if(redisUtil.hasKey(getMsg)) {
+                    logger.info("write收到回复：" + deviceInstructions);
+                    return ResponseData.success(null);
+
+                }
+            }
+//            Thread.sleep(8000);
             if(redisUtil.hasKey(getMsg)){
                 logger.info("excute收到回复：" + deviceInstructions);
                 return ResponseData.success(null);
@@ -170,6 +205,8 @@ public class DeviceInstructServiceImpl implements DeviceInstructService {
         if (device == null) {
             logger.info("设备信息获取失败，返回设备不在线：" + deviceInstructions);
              deviceDaoI.updateOfflineById(deviceInstructions.getDevId());
+            //添加上线通知
+            HTTPUtil.getResponse(device.getId(),new BigInteger("0"));
             return ResponseData.fail("设备不在线");
         }
 //        logger.info("======"+getClass() +"====DeviceInstructServiceImpl 设备信息" + device);
@@ -184,6 +221,8 @@ public class DeviceInstructServiceImpl implements DeviceInstructService {
             logger.info("socket或ip获取失败，返回设备不在线：" + deviceInstructions);
             logger.info(e.getMessage());
             deviceDaoI.updateOfflineById(deviceInstructions.getDevId());
+            //添加上线通知
+            HTTPUtil.getResponse(device.getId(),new BigInteger("0"));
             return ResponseData.fail("设备离线");
         }
         logger.info("=============设备发送：" + deviceInstructions);

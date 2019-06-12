@@ -27,7 +27,9 @@ public class ImageDataService {
         for(String str : list){
             sb.append(str);
         }
-        Base64Utils.Base64ToImage(sb.toString(), "C:/Users/Administrator/Desktop/test1.jpg");
+      boolean bl =  Base64Utils.Base64ToImage(sb.toString(), "C:/Users/Administrator/Desktop/test1.jpg");
+
+        System.out.println(bl);
         return sb.toString();
     }
 

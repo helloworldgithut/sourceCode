@@ -1,5 +1,7 @@
 package com.sendi.service;
 
+import com.sendi.entity.CompareResult;
+import com.sendi.entity.ReqBody;
 import com.sendi.entity.receiveImgBody;
 import com.sendi.utils.ResponseData;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +29,7 @@ public interface FaceService {
      */
     ResponseData  stop(String snCode, String type, String content) throws  Exception;
 
-    ResponseData  start(String snCode, String content, MultipartFile file) throws  Exception;
+    ResponseData  start(String snCode, String content,String token, MultipartFile file) throws  Exception;
 
 //    ResponseData  start( String snCode,  String content) throws  Exception;
     /**
@@ -42,4 +44,6 @@ public interface FaceService {
     ResponseData  takePhoto(String snCode, String content) throws Exception;
 
     void receiveImage(receiveImgBody revBody);
+
+    void receiveResponse(CompareResult compareResult);
 }

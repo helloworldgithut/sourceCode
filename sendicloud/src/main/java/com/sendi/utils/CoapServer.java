@@ -1,5 +1,6 @@
 package com.sendi.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.sendi.entity.Device;
 import com.sendi.service.impl.DeviceService;
 import com.sendi.service.impl.ProductServiceImpl;
@@ -59,13 +60,14 @@ public class CoapServer implements Runnable {
             packet = new DatagramPacket(data, data.length);
             try {
                 socket.receive(packet);//此方法在接收到数据报之前会一直阻塞
+                logger.info("有设备向注册服务器，发起注册/注销");
+                //开启线程处理
+                new  Thread(new CoapHandleThread(socket,packet, productService, raspberryService,
+                        raspberryUserMergeService,deviceService)).start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            logger.info("有设备向注册服务器，发起注册/注销");
-            //开启线程处理
-            new  Thread(new CoapHandleThread(socket,packet, productService, raspberryService,
-                    raspberryUserMergeService,deviceService)).start();
+
         }
     }
 
@@ -79,21 +81,27 @@ public class CoapServer implements Runnable {
 //                    logger.info("30s检查一次"+key + " : " + lifeMap.get(key) + "  result " + result);
                     Device device = deviceService.queryById(key);
                     if (result > 200000) {
-                        if(device.getState()==0){
-                            lifeMap.remove(key);
-                        }else {
-                            //设备下线后，资源不下线
-                            deviceService.updateOfflineById(device.getId());
-//                            resourceService.updat eOfflineByDevId(device.getId());
-                           //如果全部设备都已经离线，解除树莓派与用户的关联
-//                            if(){
-//
-//                            }
-                            String snCode = device.getSnCode();
-                            //根据 userkey 查出user_id,删除 user_id、树莓派SN码  到 表raspberry_user_merge
-                            raspberryUserMergeService.deleteBySnCode(snCode);
-                            logger.info("已更新状态为离线的COAP设备,timeout:"+result+",下线设备ID："+device.getId());
-                            lifeMap.remove(key);
+                        if(device != null){
+                            if(device.getState()==0){
+                                lifeMap.remove(key);
+                            }else {
+                                //超时设备下线
+                                deviceService.updateOfflineById(device.getId());
+                                //添加上线通知
+                                HTTPUtil.getResponse(device.getId(),new BigInteger("0"));
+                                Integer proId = device.getProId();
+                                int num = deviceService.queryOnlineByProId(proId);
+                                logger.info("已更新状态为离线的COAP设备,timeout:"+result+",下线设备ID："+device.getId());
+                                lifeMap.remove(key);
+
+                                if(num == 0){
+                                    String snCode = device.getSnCode();
+                                    //根据 userkey 查出user_id,删除 user_id、树莓派SN码  到 表raspberry_user_merge
+                                    raspberryUserMergeService.deleteBySnCode(snCode);
+                                    logger.info(snCode+"该树莓派上的设备全部下线");
+                                        lifeMap.remove(key);
+                                }
+                            }
                         }
                     }
                 }

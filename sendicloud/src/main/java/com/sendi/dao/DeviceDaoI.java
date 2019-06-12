@@ -76,6 +76,7 @@ public interface DeviceDaoI {
      */
     List<Device> queryByProId(Integer proId);
 
+    List<Device> queryOnlineByProId(Integer proId);
     /**
      *  根据设备ID更新设备的相关信息
      * @param device

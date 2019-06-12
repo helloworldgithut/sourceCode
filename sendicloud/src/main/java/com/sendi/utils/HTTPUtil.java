@@ -1,18 +1,27 @@
 package com.sendi.utils;
 
+import com.alibaba.fastjson.JSON;
 import lombok.Cleanup;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class HTTPUtil {
+
+    private static Logger logger = LoggerFactory.getLogger(HTTPUtil.class);
+
     public static String okHttpPost(RequestBody requestBody, String url){
         OkHttpClient client = new OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
@@ -39,7 +48,7 @@ public class HTTPUtil {
     public static String sendPostJson(String host, int port, String path, String data,int timeout) throws IOException {
 
         SocketAddress dest = new InetSocketAddress(host, port);
-        @Cleanup
+
         Socket socket = new Socket();
         socket.setSoTimeout(timeout);
         socket.connect(dest);
@@ -72,6 +81,23 @@ public class HTTPUtil {
         return sb.toString();
     }
 
+    public static String getResponse(BigInteger devID, BigInteger state){
+        Map<String ,BigInteger> dataMap = new HashMap<>();
+        dataMap.put("id",devID);
+        dataMap.put("state",state);
+        String dataStr = JSON.toJSONString(dataMap);
+        try {
+            String respon = HTTPUtil.sendPostJson("127.0.0.1",8080,"/iot_aid/device/status", dataStr,15000);
+//                    String response = HTTPUtil.sendPostJson("192.168.60.137",8080,"iot_aid/device/status", dataStr,15000);
+            logger.info("前端返回："+respon);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+
+
 //    public static void main(String[] args) {
 //        File file = new File("");
 //        RequestBody requestBody = new MultipartBody.Builder()
@@ -80,7 +106,7 @@ public class HTTPUtil {
 //                .addFormDataPart("flag", "1778526768")
 //                .build();
 //        HTTPUtil httpUtil = new HTTPUtil();
-//        String resultText =httpUtil.okHttpPost(requestBody,"http://192.168.60.137:8080/iot_aid//photo/show/impor");
+//        String resultText =httpUtil.okHttpPost(requestBody,"http://192.168.60.137:8080/iot_aid/photo/show/import");
 //        JSONObject.parseObject(resultText);
 //    }
 }

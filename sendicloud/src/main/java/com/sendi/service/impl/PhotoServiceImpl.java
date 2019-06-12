@@ -52,7 +52,7 @@ public class PhotoServiceImpl implements PhotoService {
                 return result;
             }
             String getMsg = high + "" + low;
-            Thread.sleep(3000);
+            Thread.sleep(4000);
             if(redisUtil.hasKey(getMsg)){
                 logger.info(Arrays.toString(resName));
                 logger.info("PhotoService收到回复：" + deviceInstructions);

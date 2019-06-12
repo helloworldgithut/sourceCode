@@ -1,5 +1,6 @@
 package com.sendi.controller;
 
+import com.sendi.entity.CompareResult;
 import com.sendi.entity.ReqBody;
 import com.sendi.entity.receiveImgBody;
 import com.sendi.service.FaceService;
@@ -70,34 +71,46 @@ public class FaceController {
             + "file 图片文件  MultipartFile <br>")
     @PostMapping("/start")
     @ResponseBody
-    public ResponseData  start(@RequestParam String snCode, @RequestParam String content,
+    public ResponseData  start(@RequestParam String snCode, @RequestParam String content, @RequestParam String token,
                 @RequestParam MultipartFile file) throws  Exception{
         logger.info("前端开始比对 start "+snCode+"_"+content);
-        return  faceService.start(snCode, content, file);
+        return  faceService.start(snCode, content, token, file);
     }
 
-    @ApiOperation(value = " 拉流接口，拼接一个拉流地址给前端", notes = "接口参数信息<br>"
-            + "可传参数：<br>"
-            + "snCode  sn码  String <br>"
-            + "content 操作内容  String   push/pull <br>")
-    @PostMapping("/pullStream")
-    @ResponseBody
-    public ResponseData  pushStream(@RequestBody ReqBody reqBody) throws Exception{
-        String snCode = reqBody.getSnCode();
-        String type = reqBody.getType();
-        String content = reqBody.getContent();
-        return  faceService.pushStream(snCode, content);
-    }
+//    @ApiOperation(value = " 拉流接口，拼接一个拉流地址给前端", notes = "接口参数信息<br>"
+//            + "可传参数：<br>"
+//            + "snCode  sn码  String <br>"
+//            + "content 操作内容  String   push/pull <br>")
+//    @PostMapping("/pullStream")
+//    @ResponseBody
+//    public ResponseData  pushStream(@RequestBody ReqBody reqBody) throws Exception{
+//        String snCode = reqBody.getSnCode();
+//        String type = reqBody.getType();
+//        String content = reqBody.getContent();
+//        return  faceService.pushStream(snCode, content);
+//    }
 
     @ApiOperation(value = " 接收图片接口，接收设备端发来的Base64图片", notes = "接口参数信息<br>"
             + "可传参数：<br>"
             + "snCode  sn码  String <br>"
             + "content 操作内容  String   push/pull <br>")
     @PostMapping("/receiveImage")
+
     @ResponseBody
     public void  receiveImage(@RequestBody receiveImgBody revBody) throws Exception {
-        logger.info("设备端发来图片数据 pushStream " + revBody.getFlag());
+        logger.info("设备端发来图片数据flag = " + revBody.getFlag());
         faceService.receiveImage(revBody);
     }
 
+    @ApiOperation(value = " 接收图片接口，接收设备端发来的Base64图片", notes = "接口参数信息<br>"
+            + "可传参数：<br>"
+            + "snCode  sn码  String <br>"
+            + "content 操作内容  String   push/pull <br>")
+    @PostMapping("/receiveResponse")
+
+    @ResponseBody
+    public void  receiveResponse(@RequestBody CompareResult compareResult) throws Exception {
+        logger.info("设备端发来是否包含人脸? " + compareResult.getContent());
+        faceService.receiveResponse(compareResult);
+    }
 }

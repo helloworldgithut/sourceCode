@@ -15,15 +15,6 @@
             <if test="resName != null" >
                 res_name,
             </if>
-            <if test="unitName != null" >
-                unit_name,
-            </if>
-            <if test="unitSign != null" >
-                unit_sign,
-            </if>
-            <if test="moduleId != null" >
-                module_id,
-            </if>
             <if test="op != null" >
                 op,
             </if>
@@ -36,6 +27,9 @@
             <if test="displayName != null" >
                 display_name,
             </if>
+            <if test="type != null" >
+                `type`,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -46,15 +40,6 @@
             </if>
             <if test="resName != null" >
                 #{resName,jdbcType=VARCHAR},
-            </if>
-            <if test="unitName != null" >
-                #{unitName,jdbcType=VARCHAR},
-            </if>
-            <if test="unitSign != null" >
-                #{unitSign,jdbcType=VARCHAR},
-            </if>
-            <if test="moduleId != null" >
-                #{moduleId,jdbcType=BIGINT},
             </if>
             <if test="op != null" >
                 #{op,jdbcType=INTEGER},
@@ -67,6 +52,9 @@
             </if>
             <if test="displayName != null" >
                 #{displayName,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null" >
+                #{type,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -97,15 +85,6 @@
             <if test="resName != null" >
                 res_name = #{resName,jdbcType=VARCHAR},
             </if>
-            <if test="unitName != null" >
-                unit_name = #{unitName,jdbcType=VARCHAR},
-            </if>
-            <if test="unitSign != null" >
-                unit_sign = #{unitSign,jdbcType=VARCHAR},
-            </if>
-            <if test="moduleId != null" >
-                module_id = #{moduleId,jdbcType=BIGINT},
-            </if>
             <if test="op != null" >
                 op = #{op,jdbcType=INTEGER},
             </if>
@@ -114,6 +93,9 @@
             </if>
             <if test="state != null" >
                 state = #{state,jdbcType=INTEGER},
+            </if>
+            <if test="type != null" >
+                `type` = #{type,jdbcType=INTEGER},
             </if>
         </set>
         <where>
@@ -125,7 +107,6 @@
             </if>
         </where>
     </update>
-
 
     <update id="updateOfflineByDevId" parameterType="java.math.BigInteger">
             update t_resource set state = 0
